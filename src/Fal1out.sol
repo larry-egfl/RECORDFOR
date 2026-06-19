@@ -1,34 +1,33 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.0;
 
-contract Falllout {
-    mapping(address => uint256) allocations;
-    address payable public owner;
+contract CoinFlip {
+    uint256 public consecutiveWins;
+    uint256 lastHash;
+    uint256 FACTOR =
+        57896044618658097711785492504343953926634992332820282019728792003956564819968;
 
-    function Fal1out() public payable {
-        owner = payable(msg.sender);
-        allocations[owner] = msg.value;
+    constructor() {
+        consecutiveWins = 0;
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "caller is not the owner");
-        _;
-    }
+    function flip(bool _guess) public returns (bool) {
+        uint256 blockValue = uint256(blockhash(block.number - 1));
 
-    function allocate() public payable {
-        allocations[msg.sender] = allocations[msg.sender] + msg.value;
-    }
+        if (lastHash == blockValue) {
+            revert();
+        }
 
-    function sendAllocation(address payable allocator) public {
-        require(allocations[allocator] > 0);
-        allocator.transfer(allocations[allocator]);
-    }
+        lastHash = blockValue;
+        uint256 coinFlip = blockValue / FACTOR;
+        bool side = coinFlip == 1 ? true : false;
 
-    function collectAllocations() public onlyOwner {
-        payable(msg.sender).transfer(address(this).balance);
-    }
-
-    function allocatorBalance(address allocator) public view returns (uint256) {
-        return allocations[allocator];
+        if (side == _guess) {
+            consecutiveWins++;
+            return true;
+        } else {
+            consecutiveWins = 0;
+            return false;
+        }
     }
 }
