@@ -2,13 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "forge-std/Script.sol";
-import "../src/CoinFlipAttack.sol";
+import "../src/TelephoneAttack.sol";
 
 contract DeployAttack is Script {
     function run() external {
-        address instance = 0x010AF27c00D40e6e513d83e40FFaCc699eDA08Bc; // ← Ethernaut 给你的题目实例地址
+        address instance = 0xB629B6Dac10D45D049C78116a7003189784fb6bd; // ← Ethernaut 给你的题目实例地址
         vm.startBroadcast();
-        new CoinFlipAttack(instance);
+        new TelephoneAttack(instance);
         vm.stopBroadcast();
     }
 }
